@@ -1,0 +1,6 @@
+[submodule "catkin_ws/src/ambot_msgs"]
+	path = catkin_ws/src/ambot_msgs
+	url = https://github.com/sunzhon/ambot_msgs.git
+[submodule "catkin_ws/src/joy"]
+	path = catkin_ws/src/joy
+	url = https://github.com/sunzhon/joy.git
