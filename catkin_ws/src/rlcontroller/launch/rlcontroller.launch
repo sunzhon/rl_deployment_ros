@@ -1,0 +1,34 @@
+<launch>
+
+<arg name="user" default="$(env USER)" />
+
+<arg name="hostname" default="$(env ROS_HOSTNAME)" />
+
+<machine name="$(arg hostname)"  address="$(arg hostname)" env-loader="$(find rlcontroller)/config/ambot_env.zsh" user="$(arg user)" />
+
+
+
+<!-- namespace and rosparams -->
+<arg name="namespace" default="$(env ROBOTNAME)" />
+<arg name="policy_name" default="$(env POLICY_NAME)" />
+<arg name="ros_rate" default="$(env ROS_RATE)" />
+<rosparam file="$(find rlcontroller)/config/rlcontroller.yaml" command="load" ns="$(arg namespace)"/>
+<rosparam file="$(find rlcontroller)/config/$(arg namespace)_jointspace.yaml" command="load" ns="$(arg namespace)"/>
+
+
+<!-- fill the following args to set main args -->
+<arg name="controller_args" default="--mode upboard --namespace $(arg namespace) --ros_rate $(arg ros_rate) --logdir /home/$(arg user)/workspace/ambot/AmbotRL/deployment/catkin_ws/src/rlcontroller/config/trained_policies/$(arg namespace)/$(arg policy_name)" />
+
+
+<include file="$(find joy)/launch/ps5joy.launch" />
+
+<node machine="$(arg hostname)" name="rlcontroller_node" pkg="rlcontroller" type="main.py" required="true" output="screen" args="$(arg controller_args)">
+
+
+
+<!-- remap from="$(arg namespace)/states" to="$(arg namespace)/states_mujoco"/ -->
+</node>
+<node pkg="rosbag" type="record" name="bag_record" output="screen" args = "$(arg namespace)/states $(arg namespace)/actions  -o /home/$(arg user)/workspace/ambot/AmbotRL/legged_gym/logs/checking_obs/states_actions.bag"/>
+
+</launch>
+

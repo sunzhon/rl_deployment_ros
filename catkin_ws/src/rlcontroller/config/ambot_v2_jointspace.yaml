@@ -1,0 +1,31 @@
+leg_name: ["FL", "FR", "HL", "HR"]
+joint_name: ["joint1", "joint2", "joint3" ]
+
+max_joint_limits:
+        FL_joint1: 70
+        FL_joint2: 40
+        FL_joint3: 70
+        FR_joint1: 120
+        FR_joint2: 100
+        FR_joint3: 70
+        HL_joint1: 30
+        HL_joint2: 40
+        HL_joint3: 70
+        HR_joint1: 120
+        HR_joint2: 100
+        HR_joint3: 70
+
+min_joint_limits:
+        FL_joint1: -120
+        FL_joint2: -100
+        FL_joint3: -100
+        FR_joint1: -80
+        FR_joint2: -40
+        FR_joint3: -100
+        HL_joint1: -120
+        HL_joint2: -100
+        HL_joint3: -100
+        HR_joint1: -30
+        HR_joint2: -40
+        HR_joint3: -100
+

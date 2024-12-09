@@ -1,0 +1,22 @@
+operation_cmd:
+        motion_mode: 0
+        Vx: 0
+        Vy: 0
+        Rz: 0
+        gait: 1
+        gait_duration: 0.5
+        gait_frequency_cmd: 2
+        feetswing_height_cmd: 0.010
+        body_height_cmd: 0.0
+        body_roll: 0.0
+        body_pitch: 0.0
+        stance_width_cmd: 0.36
+        stance_length_cmd: 0.38
+
+
+
+subscribeTopics:
+        - states
+advertiseTopics:
+        - actions
+
