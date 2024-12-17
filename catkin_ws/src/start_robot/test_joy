@@ -1,0 +1,53 @@
+#!/usr/bin/python3
+import os
+import sys
+import time
+import subprocess
+import threading
+
+def create_run_thread(arg):
+    print("run")
+    # subprocess.call(cmdString, shell=True)
+
+
+if __name__=="__main__":
+    startpath=os.environ['AMBOT'] + "/projects/catkin_ws/src/start_robot/start_robot"
+    bluetooth="/dev/input/js0"
+    # processID = 9999
+    while True:
+        if not os.path.exists(bluetooth):
+            print("waiting for connect to joystick,now sleep 1s")
+            time.sleep(1)
+            # sys.exit(1)
+        else:
+            print("please click button 4 (right hand) to start the controller")
+            data=[]
+            done=True
+            robotRunFlag=False
+            with open(bluetooth, 'rb') as f:
+                while done:
+                    a=f.readline(1)
+                    data.append(ord(a))
+                    if len(data)==16:
+                        print(data)
+                        if(robotRunFlag == True):
+                            if((data[-3]==0) and (data[-2]==1) and (data[-1]==8)):
+                                print("shutdown down the robot computer!")
+                                processID = subprocess.check_output(['pgrep', '-f', 'ambot_controller.launch'], universal_newlines=True)
+                                # processID = subprocess.getoutput('pgrep -f ambot_controller.launch')
+                                # print(processID)
+                                cmdString = 'kill '+ str(int(processID))
+                                subprocess.call(cmdString, shell=True)
+                                # os.system(cmdString)
+                                robotRunFlag = False
+                                break
+                        else:
+                            if (data[-3]==0) and (data[-2] == 1) and (data[-1]==9) :
+                                print("Attention ..., robot will move!")
+                                # cmdString = 'roslaunch ambot_controller ambot_controller.launch'
+                                # subprocess.call(cmdString, shell=True)
+                                os.system("roslaunch ambot_controller ambot_controller.launch")
+                                robotRunFlag = True
+                        # print(data)
+                        data.clear()
+

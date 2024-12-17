@@ -1,0 +1,10 @@
+#! /bin/sh
+current_path=$0
+current_folder=${current_path%/*}
+link_node="/link_node_file.sh"
+init_usb="/init_usb_port.sh"
+. ${current_folder}${link_node}
+. ${current_folder}${init_usb}
+mkdir -p ${HOME}/workspace/tensorboard
+roslaunch ambot_realrobot ambot.launch
+

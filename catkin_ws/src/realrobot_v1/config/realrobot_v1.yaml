@@ -1,0 +1,53 @@
+ambot_devices:
+  dxl_device: /dev/U2D2
+  imu_device: /dev/VN100
+  force_device_FL: /dev/BOTA_FL
+  force_device_FR: /dev/BOTA_FR
+  force_device_HL: /dev/BOTA_HL
+  force_device_HR: /dev/BOTA_HR
+  llcb_device: /dev/amrboard
+  imu: imu_sensor
+  footforce: footforce_sensor
+  stickA: stick_axes
+  stickB: stick_button
+
+ambot_params:  
+  dxl_baud: 4000000
+  imu_baud: 921600
+  force_baud: 921600
+  forceBoard_baud: 9600
+  return_delay_time: 0
+#max:1024
+  profile_velocity: 500
+#max:1024
+  profile_acceleration: 800
+  scan_range: 30
+  limb_num: 7
+  leg_num: 4
+  motor_num: 14
+  action_num: 12
+  motor_data_num: 6
+  pose_num: 10
+  force_data_num: 6
+  sensor_num: 98 
+  ros_rate: 100
+  p_gain: 0.6
+  d_gain: 0.6
+  WalkingMode: 0.0
+  #the state indicate: 0-not ok,  1-ok
+  real_robot_start_state: 0
+  controller_start_state: 0
+    
+
+
+robotSubscribeTopic:
+  - cpgValues
+  - reflexValues
+  - modelValues
+  - terminateControllerValues
+  - ambot_v1/actions
+
+robotAdvertiseTopic:
+  - ambot_v1/states
+  - terminateRobotValues
+

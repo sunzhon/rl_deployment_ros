@@ -1,0 +1,33 @@
+ambot_devices:
+  motor_device: /dev/AMBOT_MOTOR
+  sensor_device: /dev/AMBOT_SENSOR
+  # motor_device: /dev/ttyUSB0
+  # sensor_device: /dev/VN100
+
+ambot_params:  
+  motor_baud: 1500000
+  sensor_baud: 1500000
+
+  real_robot_start_state: 1
+
+  motor_control_mode: 0     ##mode: 0-locomotion control  1-position  2-velocity  3-current
+  motor_max_angle: 1.57     #unit:rad
+  motor_min_angle: -1.57    #unit:rad
+  motor_velocity: 2.0       #I don't know the unit
+
+  limb_num: 7
+  leg_num: 4
+  motor_num: 12
+  imu_num: 10
+  force_data_num: 6
+  sensor_num: 130 
+  ros_rate: 400      #max:motor_baud/(138+114)*10*1.4
+
+robotSubscribeTopic:
+  - /ambot_v2/actions
+  - terminateControllerValues
+
+robotAdvertiseTopic:
+  - /ambot_v2/states
+  - terminateRobotValues
+

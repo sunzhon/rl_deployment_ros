@@ -1,0 +1,20 @@
+<launch>
+
+    <!-- machine name="st-pc"  address="st-pc" env-loader="/home/suntao/workspace/gorobots/projects/stbot/genesis/catkin_ws/src/stbot/config/stbot_env.zsh" user="suntao" / -->
+    <!-- machine name="nuc"  address="nuc" env-loader="/home/sun/workspace/gorobots/utils/real_robots/stbot/catkin_ws/src/lilistbot/config/lilistbot_env.zsh" user="sun" / -->
+
+
+    <arg name="hostname" default="$(env ROS_HOSTNAME)"/>
+    <arg name="ambot_path" default="$(env AMBOT)"/>
+    <arg name="user" default="$(env USER)" />
+    <arg name="stbot" default="stbot" />
+    <machine name="$(arg hostname)"  address="$(arg hostname)" env-loader="$(env HOME)/.zshrc" user="$(arg user)" />
+
+
+    <rosparam file="$(find realrobot_v1)/config/realrobot_v1.yaml" command="load"/>
+
+    <!-- If to debug, add  launch-prefix='gdb -ex run - - args'  in this follow table  / -->
+
+    <node machine="$(arg hostname)" name="robot_node" pkg="realrobot_v1" type="realrobot_v1_node" output="screen"  required="true"  />
+          
+</launch>

@@ -1,0 +1,30 @@
+#! /bin/sh
+
+#path_1=$0
+#path_2=${path_1%/*}
+#link_node="/link_node_file.sh"
+#. ${path_2}${link_node}
+#roslaunch stbot stbot.launch
+
+
+# current_path=$(cd `dirname $0`;pwd)
+# link_node="/link_node_file.sh"
+
+# # initial the rospack path
+# . $GOROBOTS/projects/stbot/genesis/catkin_ws/devel/setup.sh
+# # build a link of the node
+# . ${current_path}${link_node}
+
+
+# launch stbot with its controller
+FILE="$AMBOT/sim_robots/st_sim/toflobot_v2/controllers/webots_sim_node/webots_sim_node"
+if [ -e "$FILE" ]; then
+    echo "webots_sim_node exists, now update it."
+    rm $FILE
+else
+    echo "webots_sim_node does not exist, create a folder for it!"
+    mkdir -p $AMBOT/sim_robots/st_sim/toflobot_v2/controllers/webots_sim_node
+fi
+cp $AMBOT/projects/catkin_ws/devel/lib/webots_sim/webots_sim_node ${AMBOT}/sim_robots/st_sim/toflobot_v2/controllers/webots_sim_node
+# roslaunch webots_ros toflobot.launch
+roslaunch webots_sim toflobot_v2.launch 

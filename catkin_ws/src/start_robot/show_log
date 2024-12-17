@@ -1,0 +1,328 @@
+#!/usr/bin/python3
+
+import sys
+import csv
+import matplotlib.pyplot as plt
+import numpy as np
+import os
+def split_path(file_path):
+    path,file_name = os.path.split(file_path)
+    return path, file_name
+
+def get_file_name(file_path):
+    _, file_name = split_path(file_path)
+    return file_name
+
+def has_letter(param):
+    for char in param:
+        if char.isalpha():
+            return True
+    return False
+
+def new_report(test_report):
+    lists = os.listdir(test_report) # 列出目录的下所有文件和文件夹保存到lists
+    lists.sort(key=lambda fn: os.path.getmtime(test_report + "/" + fn)) # 按时间排序
+    temp_path = os.path.join(test_report, lists[-1]) # judge newest file whether is datalog file
+    file_new = get_file_name(temp_path)
+    print(file_new)
+    if has_letter(file_new):
+        file_new = os.path.join(test_report, lists[-2]) # 获取最新的文件保存到file_new
+    else:
+        file_new = temp_path
+    return file_new
+
+
+home_path = os.environ.get('HOME')
+path_name = home_path + "/workspace/experiment_data/"
+
+if len(sys.argv[1:])<1:
+    print("You must give one param at least!!!")
+    print("usage: show_log [folder_path_name] [command] .....")
+    print("[folder_path_name]:\n\tyou could not give this param, script will auto search newest folder in ~/workspace/experiment_data")
+    print("[command]:\n\tcommand - position command\n\tposition - position feedback\n\tcurrent - joint current\n\ttrajectory - to show plan and actual trajectory of four leg\n\tcompare - to compare any data if you want")
+
+else:
+    if has_letter(sys.argv[1]):
+        print("auto search")
+        folder_name = new_report(path_name)
+        path_name = folder_name + "/controlfile_data.csv"
+        command = sys.argv[1]
+        auto_search_flag = True
+    else:
+        print("give folder")
+        path_name = path_name + str(sys.argv[1]) + "/controlfile_data.csv"
+        command = sys.argv[2]
+        auto_search_flag = False
+    print(path_name)
+    #open csv file
+    with open(path_name, "r") as f:         # 打开csv文件
+        reader = csv.reader(f, delimiter='\t')              # 读取csv文件,delimiter is \t
+        list_data = list(reader)            # csv数据转换为列表
+        f.close()
+    #get the file data and initialize variables
+    rows = len(list_data)-1                   # 行数
+    cols = len(list_data[0])                # 列数
+
+    position_command = np.zeros((rows-1,24))
+    position_feedback = np.zeros((rows-1,24))
+    current_feedback = np.zeros((rows-1,24))
+    trajectory_feedback = np.zeros((rows-1,24))
+    body_part = [2,4,4,4,4,2,4]
+
+    #get data 4756
+    for i in range(position_command.shape[0]):
+        # print(i)
+        for j in range(position_command.shape[1]):
+            # print(j)
+            position_command[i][j] = list_data[i+1][j+1]
+            position_feedback[i][j] = list_data[i+1][j+25]
+            current_feedback[i][j] = list_data[i+1][j+49]
+            # trajectory_feedback[i][j] = list_data[i+1][j+49+24]
+    #according to the command to plot
+    if (command == "command"):
+        # figure_flag = 1
+        # index = 1
+        # for i in range(len(body_part)):
+        #     if i < 4:
+        #         plt.subplot(221+i)
+        #         for j in range(body_part[i]):
+        #             str_label = str("joint_" + str(index))
+        #             plt.plot(position_command[:,index-1],label=str_label)
+        #             index += 1
+        #         plt.legend(loc="upper left")
+        #         plt.title("leg_"+str(i))
+        #     else:
+        #         if(figure_flag==1):
+        #             figure_flag=0
+        #             plt.figure()
+        #         plt.subplot(307+i)
+        #         for j in range(body_part[i]):
+        #             if index <= 18:
+        #                 str_label = "head_" + str(index)
+        #                 title_label = "head"
+        #             elif index <= 20:
+        #                 str_label = "spine_" + str(index)
+        #                 title_label = "spine"
+        #             elif index <= 24:
+        #                 str_label = "tail_" + str(index)
+        #                 title_label = "tail"
+        #             plt.plot(position_command[:,index-1],label=str_label)
+        #             index += 1
+        #         plt.legend(loc="upper left")
+        #         plt.title(title_label)
+        # plt.show()
+
+
+
+        figure_flag = 1
+        index = 1
+        for i in range(len(body_part)):
+            if i < 1  :
+                for j in range(body_part[i]):
+                    str_label = str("joint_" + str(index))
+                    plt.plot(position_command[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title("spine")
+            elif i < 5:
+                if(figure_flag == 1):
+                    figure_flag = 0
+                    plt.figure()
+                plt.subplot(220+i)
+                for j in range(body_part[i]):
+                    str_label = str("joint_" + str(index))
+                    plt.plot(position_command[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title("leg_"+str(i))
+            else:
+                if(figure_flag == 0):
+                    figure_flag=1
+                    plt.figure()
+                plt.subplot(116+i)
+                for j in range(body_part[i]):
+                    if index <= 20:
+                        str_label = "head_" + str(index)
+                        title_label = "head"
+                    elif index <= 24:
+                        str_label = "tail_" + str(index)
+                        title_label = "tail"
+                    plt.plot(position_command[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title(title_label)
+        plt.show()
+
+
+    elif (command == "position"):
+        figure_flag = 1
+        index = 1
+        for i in range(len(body_part)):
+            if i < 1  :
+                for j in range(body_part[i]):
+                    str_label = str("joint_" + str(index))
+                    plt.plot(position_feedback[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title("spine")
+            elif i < 5:
+                if(figure_flag == 1):
+                    figure_flag = 0
+                    plt.figure()
+                plt.subplot(220+i)
+                for j in range(body_part[i]):
+                    str_label = str("joint_" + str(index))
+                    plt.plot(position_feedback[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title("leg_"+str(i))
+            else:
+                if(figure_flag == 0):
+                    figure_flag=1
+                    plt.figure()
+                plt.subplot(116+i)
+                for j in range(body_part[i]):
+                    if index <= 20:
+                        str_label = "head_" + str(index)
+                        title_label = "head"
+                    elif index <= 24:
+                        str_label = "tail_" + str(index)
+                        title_label = "tail"
+                    plt.plot(position_feedback[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title(title_label)
+        plt.show()
+    
+    elif (command == "current"):
+        figure_flag = 1
+        index = 1
+        for i in range(len(body_part)):
+            if i < 1  :
+                for j in range(body_part[i]):
+                    str_label = str("joint_" + str(index))
+                    plt.plot(current_feedback[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title("spine")
+            elif i < 5:
+                if(figure_flag == 1):
+                    figure_flag = 0
+                    plt.figure()
+                plt.subplot(220+i)
+                for j in range(body_part[i]):
+                    str_label = str("joint_" + str(index))
+                    plt.plot(current_feedback[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title("leg_"+str(i))
+            else:
+                if(figure_flag == 0):
+                    figure_flag=1
+                    plt.figure()
+                plt.subplot(116+i)
+                for j in range(body_part[i]):
+                    if index <= 20:
+                        str_label = "head_" + str(index)
+                        title_label = "head"
+                    elif index <= 24:
+                        str_label = "tail_" + str(index)
+                        title_label = "tail"
+                    plt.plot(current_feedback[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title(title_label)
+        plt.show()
+
+    elif (command == "trajectory"):
+        index = 1
+        for i in range(4):
+                plt.subplot(221+i)
+                for j in range(6):
+                    if(j<3):
+                        str_label = str("reference_" + str(index+1))
+                    elif(j<6):
+                        str_label = str("current_" + str(index-2))
+                    plt.plot(trajectory_feedback[:,index-1],label=str_label)
+                    index += 1
+                plt.legend(loc="upper left")
+                plt.title("leg_trajectory_"+str(i))
+        plt.show()
+
+    elif command == "compare":
+        if auto_search_flag==False:     
+            argv_count = len(sys.argv[2:])
+            if(argv_count < 3):
+                print("compare's param[2] must be one of position,command!!!!!\n\nchoose one and try again!!")
+            elif sys.argv[3] == "position":
+                compare_count = len(sys.argv[4:])
+                if(compare_count > 4):
+                    print("max number of compare can't greater than 4!!!!!!")
+                for i in range(compare_count):
+                    index = int(sys.argv[4+i])
+                    str_label = "position_" + sys.argv[4+i]
+                    plt.plot(position_feedback[:,index-1],label=str_label)
+                plt.legend(loc="upper left")
+                plt.show()
+            elif sys.argv[3] == "command":
+                compare_count = len(sys.argv[4:])
+                if(compare_count > 4):
+                    print("max number of compare can't greater than 4!!!!!!")
+                for i in range(compare_count):
+                    index = int(sys.argv[4+i])
+                    str_label = "command_" + sys.argv[4+i]
+                    plt.plot(position_command[:,index-1],label=str_label)
+                plt.legend(loc="upper left")
+                plt.show()
+            elif sys.argv[3] == "current":
+                compare_count = len(sys.argv[4:])
+                if(compare_count > 4):
+                    print("max number of compare can't greater than 4!!!!!!")
+                for i in range(compare_count):
+                    index = int(sys.argv[4+i])
+                    str_label = "current_" + sys.argv[4+i]
+                    plt.plot(current_feedback[:,index-1],label=str_label)
+                plt.legend(loc="upper left")
+                plt.show()
+            else:
+                print("compare's param[2] must be one of position,command!!!!!\n\nchoose one and try again!!")
+        else:
+            argv_count = len(sys.argv[1:])
+            if(argv_count < 3):
+                print("compare's param[2] must be one of position,command!!!!!\n\nchoose one and try again!!")
+            elif sys.argv[2] == "position":
+                compare_count = len(sys.argv[3:])
+                if(compare_count > 4):
+                    print("max number of compare can't greater than 4!!!!!!")
+                for i in range(compare_count):
+                    index = int(sys.argv[3+i])
+                    str_label = "position_" + sys.argv[3+i]
+                    plt.plot(position_feedback[:,index-1],label=str_label)
+                plt.legend(loc="upper left")
+                plt.show()
+            elif sys.argv[2] == "command":
+                compare_count = len(sys.argv[3:])
+                if(compare_count > 4):
+                    print("max number of compare can't greater than 4!!!!!!")
+                for i in range(compare_count):
+                    index = int(sys.argv[3+i])
+                    str_label = "command_" + sys.argv[3+i]
+                    plt.plot(position_command[:,index-1],label=str_label)
+                plt.legend(loc="upper left")
+                plt.show()
+            elif sys.argv[2] == "current":
+                compare_count = len(sys.argv[3:])
+                if(compare_count > 4):
+                    print("max number of compare can't greater than 4!!!!!!")
+                for i in range(compare_count):
+                    index = int(sys.argv[3+i])
+                    str_label = "current_" + sys.argv[3+i]
+                    plt.plot(current_feedback[:,index-1],label=str_label)
+                plt.legend(loc="upper left")
+                plt.show()
+            else:
+                print("compare's param[2] must be one of position,command!!!!!\n\nchoose one and try again!!")
+
+
+
+

@@ -1,0 +1,12 @@
+<launch>
+
+    <arg name="hostname" default="$(env ROS_HOSTNAME)"/>
+    <arg name="ambot_path" default="$(env AMBOT)"/>
+    <arg name="user" default="$(env USER)" />
+    <arg name="stbot" default="stbot" />
+    <!-- <machine name="$(arg hostname)"  address="$(arg hostname)" env-loader="$(env HOME)/.zshrc" user="$(arg user)" /> -->
+    <!-- launch-prefix='gdb -ex run - - args' -->
+    <rosparam file="$(find realrobot_v2)/config/realrobot_v2.yaml" command="load"/>
+    <!-- include file="$(env AMBOT)/projects/catkin_ws/src/ambot_controller/launch/ambot_controller.launch" / -->
+    <node name="robot_node" pkg="realrobot_v2" type="realrobot_v2_node" output="screen" required="true" />
+</launch>

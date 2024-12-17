@@ -1,0 +1,10 @@
+[Unit]
+Description=Test Service
+After=network.target
+
+[Service]
+ExecStart=/home/cc/Desktop/Git_Folder/ambot/projects/catkin_ws/src/start_robot/ambot_auto_start.zsh
+WorkingDirectory=/home/cc
+User=cc
+[Install]
+WantedBy=multi-user.target
